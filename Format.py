@@ -239,10 +239,10 @@ class VOC:
                 os.walk(os.path.abspath(path)))
 
             data = {}
-            print(dir_path)
-            print(path)
-            print(dir_names)
-            print(len(filenames))
+            #print(dir_path)
+            #print(path)
+            #print(dir_names)
+            #print(len(filenames))
             progress_length = len(filenames)
             progress_cnt = 0
             printProgressBar(0, progress_length, prefix='\nVOC Parsing:'.ljust(
@@ -250,7 +250,7 @@ class VOC:
             for filename in filenames:
 
                 xml = open(os.path.join(dir_path, filename), "r")
-                print(os.path.join(dir_path, filename))
+                
                 tree = Et.parse(xml)
                 root = tree.getroot()
 
@@ -265,6 +265,7 @@ class VOC:
                 objects = root.findall("object")
                 if len(objects) == 0:
                     #return False, "number object zero"
+                    # print(os.path.join(dir_path, filename))
                     pass
 
                 obj = {
