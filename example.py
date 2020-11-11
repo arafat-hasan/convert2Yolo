@@ -4,11 +4,12 @@ import os
 from xml.etree.ElementTree import dump
 import json
 import pprint
+import copy
 
 import argparse
 
-
 from Format import VOC, COCO, UDACITY, KITTI, YOLO
+from ClassChange import ClassChange
 
 parser = argparse.ArgumentParser(description='label Converting example.')
 parser.add_argument('--datasets', type=str, help='type of datasets')
@@ -22,6 +23,8 @@ parser.add_argument('--manifest_path', type=str,
                     help='directory of manipast file', default="./")
 parser.add_argument('--cls_list_file', type=str,
                     help='directory of *.names file', default="./")
+parser.add_argument('--change_cls_list_file', type=str,
+                    help='directory of change *.names file')
 
 
 args = parser.parse_args()
@@ -36,6 +39,14 @@ def main(config):
         flag, data = voc.parse(config["label"])
 
         if flag == True:
+            # This Class Change and delete is only tested for voc, other classes will also work.
+            # This portion of code need to be pasted there.
+            if config["change_cls_list"] is not None and os.path.exists(config["change_cls_list"]):
+                classchange = ClassChange(os.path.abspath(config["change_cls_list"]))
+                tmp = copy.deepcopy(data)
+                change_data = classchange.trim(tmp)
+            del data
+            data = change_data
 
             flag, data = yolo.generate(data)
             if flag == True:
@@ -60,6 +71,7 @@ def main(config):
             config["cls_list"]), cls_hierarchy=cls_hierarchy)
 
         if flag == True:
+            
             flag, data = yolo.generate(data)
 
             if flag == True:
@@ -134,6 +146,7 @@ if __name__ == '__main__':
         "manifest_path": args.manifest_path,
         "output_path": args.convert_output_path,
         "cls_list": args.cls_list_file,
+        "change_cls_list": args.change_cls_list_file,
     }
 
     main(config)

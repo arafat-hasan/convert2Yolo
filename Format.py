@@ -290,7 +290,7 @@ class VOC:
                     "objects": obj
                 }
 
-                data[os.path.splitext(filename)[0]] = annotation 
+                data[os.path.splitext(filename)[0]] = annotation
                 # data[root.find("filename").text.split(".")[0]] = annotation
 
                 printProgressBar(progress_cnt + 1, progress_length,
