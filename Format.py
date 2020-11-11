@@ -239,6 +239,10 @@ class VOC:
                 os.walk(os.path.abspath(path)))
 
             data = {}
+            print(dir_path)
+            print(path)
+            print(dir_names)
+            print(len(filenames))
             progress_length = len(filenames)
             progress_cnt = 0
             printProgressBar(0, progress_length, prefix='\nVOC Parsing:'.ljust(
