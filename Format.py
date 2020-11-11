@@ -242,7 +242,7 @@ class VOC:
             #print(dir_path)
             #print(path)
             #print(dir_names)
-            #print(len(filenames))
+            print("Total files", len(filenames))
             progress_length = len(filenames)
             progress_cnt = 0
             printProgressBar(0, progress_length, prefix='\nVOC Parsing:'.ljust(
@@ -303,6 +303,7 @@ class VOC:
                                  prefix='VOC Parsing:'.ljust(15), suffix='Complete', length=40)
                 progress_cnt += 1
 
+            print("Parsing Completed")
             return True, data
 
         except Exception as e:
