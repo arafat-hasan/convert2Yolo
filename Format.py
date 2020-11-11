@@ -250,7 +250,7 @@ class VOC:
             for filename in filenames:
 
                 xml = open(os.path.join(dir_path, filename), "r")
-
+                print(os.path.join(dir_path, filename))
                 tree = Et.parse(xml)
                 root = tree.getroot()
 
