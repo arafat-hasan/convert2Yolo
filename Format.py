@@ -8,6 +8,8 @@ import xml.etree.ElementTree as Et
 from xml.etree.ElementTree import Element, ElementTree
 from PIL import Image
 
+from tqdm import tqdm
+
 import json
 
 from xml.etree.ElementTree import dump
@@ -245,9 +247,10 @@ class VOC:
             print("Total files", len(filenames))
             progress_length = len(filenames)
             progress_cnt = 0
-            printProgressBar(0, progress_length, prefix='\nVOC Parsing:'.ljust(
-                15), suffix='Complete', length=40)
-            for filename in filenames:
+
+            print("VOCCC Parsing:")
+
+            for filename in tqdm(filenames):
 
                 xml = open(os.path.join(dir_path, filename), "r")
                 
@@ -299,9 +302,6 @@ class VOC:
                 data[os.path.splitext(filename)[0]] = annotation
                 # data[root.find("filename").text.split(".")[0]] = annotation
 
-                printProgressBar(progress_cnt + 1, progress_length,
-                                 prefix='VOC Parsing:'.ljust(15), suffix='Complete', length=40)
-                progress_cnt += 1
 
             print("Parsing Completed")
             return True, data
@@ -735,12 +735,10 @@ class YOLO:
 
             progress_length = len(data)
             progress_cnt = 0
-            printProgressBar(0, progress_length, prefix='\nYOLO Generating:'.ljust(
-                15), suffix='Complete', length=40)
 
             result = {}
-
-            for key in data:
+            print("YOLO Generating:")
+            for key in tqdm(data):
                 img_width = int(data[key]["size"]["width"])
                 img_height = int(data[key]["size"]["height"])
 
@@ -776,10 +774,6 @@ class YOLO:
 
                 result[key] = contents
 
-                printProgressBar(progress_cnt + 1, progress_length, prefix='YOLO Generating:'.ljust(15),
-                                 suffix='Complete',
-                                 length=40)
-                progress_cnt += 1
 
             return True, result
 
@@ -799,8 +793,6 @@ class YOLO:
 
             progress_length = len(data)
             progress_cnt = 0
-            printProgressBar(0, progress_length, prefix='\nYOLO Saving:'.ljust(
-                15), suffix='Complete', length=40)
 
             if os.path.isdir(manifest_path):
                 manifest_abspath = os.path.join(manifest_path, "manifest.txt")
@@ -809,17 +801,14 @@ class YOLO:
 
             with open(os.path.abspath(manifest_abspath), "w") as manifest_file:
 
-                for key in data:
+                print("YOLO Saving:")
+                for key in tqdm(data):
                     manifest_file.write(os.path.abspath(os.path.join(
                         img_path, "".join([key, img_type, "\n"]))))
 
                     with open(os.path.abspath(os.path.join(save_path, "".join([key, ".txt"]))), "w") as output_txt_file:
                         output_txt_file.write(data[key])
 
-                    printProgressBar(progress_cnt + 1, progress_length, prefix='YOLO Saving:'.ljust(15),
-                                     suffix='Complete',
-                                     length=40)
-                    progress_cnt += 1
 
             return True, None
 
