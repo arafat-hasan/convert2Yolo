@@ -7,6 +7,7 @@ import csv
 import xml.etree.ElementTree as Et
 from xml.etree.ElementTree import Element, ElementTree
 from PIL import Image
+import cv2
 
 import json
 
@@ -21,9 +22,20 @@ class ClassChange:
             reader = csv.reader(infile)
             tmpdict = {rows[0]: rows[1] for rows in reader}
         self.changelist = tmpdict
+
     
-    def trim(self, data):
+    def trim(self, data, img_path, img_ext):
         for key in data:
+            imgsize = data[key]["size"]
+            if imgsize["width"] == None or imgsize["height"] == None or imgsize["depth"] == None or int(imgsize["width"]) == 0 or int(imgsize["height"]) == 0 or int(imgsize["depth"]) == 0:
+                print(f'Invalid image size in `{key+".xml"}`, no worry, fixing...')
+                file = key + img_ext
+                im = cv2.imread(os.path.join(img_path, file))
+                h, w, d = im.shape
+                print("Image sizes: ", h, w, d)
+                imgsize["width"] = str(w)
+                imgsize["height"] = str(h)
+                imgsize["depth"] = str(d)
             numobjects = data[key]["objects"]["num_obj"]
             objects  = data[key]["objects"]
             for idx in range(numobjects):

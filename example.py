@@ -44,9 +44,10 @@ def main(config):
             if config["change_cls_list"] is not None and os.path.exists(config["change_cls_list"]):
                 classchange = ClassChange(os.path.abspath(config["change_cls_list"]))
                 tmp = copy.deepcopy(data)
-                change_data = classchange.trim(tmp)
+                change_data = classchange.trim(tmp, config["img_path"], config["img_type"])
             del data
             data = change_data
+            #print(json.dumps(data, sort_keys=True, indent=4))
 
             flag, data = yolo.generate(data)
             if flag == True:

@@ -248,7 +248,7 @@ class VOC:
             progress_length = len(filenames)
             progress_cnt = 0
 
-            print("VOCCC Parsing:")
+            print("VOC Parsing:")
 
             for filename in tqdm(filenames):
 
@@ -732,9 +732,6 @@ class YOLO:
     def generate(self, data):
 
         try:
-
-            progress_length = len(data)
-            progress_cnt = 0
 
             result = {}
             print("YOLO Generating:")
