@@ -9,8 +9,9 @@ from xml.etree.ElementTree import Element, ElementTree
 from PIL import Image
 
 from tqdm import tqdm
-
+import pathlib
 import json
+import glob
 
 from xml.etree.ElementTree import dump
 
@@ -237,22 +238,24 @@ class VOC:
     def parse(path):
         try:
 
-            (dir_path, dir_names, filenames) = next(
-                os.walk(os.path.abspath(path)))
+            #(dir_path, dir_names, filenames) = next(
+            #    os.walk(os.path.abspath(path)))
+            
+            filenames = glob.glob(path + '/**/*.xml', recursive=True)
 
             data = {}
-            #print(dir_path)
-            #print(path)
-            #print(dir_names)
+            #print("dir path", dir_path)
+            #print("path", path)
+            #print("dirnames", dir_names)
+            #print("filenames", filenames)
             print("Total files", len(filenames))
-            progress_length = len(filenames)
-            progress_cnt = 0
 
             print("VOC Parsing:")
 
             for filename in tqdm(filenames):
 
-                xml = open(os.path.join(dir_path, filename), "r")
+                #xml = open(os.path.join(dir_path, filename), "r")
+                xml = open(filename, "r")
                 
                 tree = Et.parse(xml)
                 root = tree.getroot()
@@ -299,7 +302,8 @@ class VOC:
                     "objects": obj
                 }
 
-                data[os.path.splitext(filename)[0]] = annotation
+                name_with_path = os.path.relpath(os.path.splitext(filename)[0], path)
+                data[name_with_path] = annotation
                 # data[root.find("filename").text.split(".")[0]] = annotation
 
 
@@ -788,9 +792,6 @@ class YOLO:
 
         try:
 
-            progress_length = len(data)
-            progress_cnt = 0
-
             if os.path.isdir(manifest_path):
                 manifest_abspath = os.path.join(manifest_path, "manifest.txt")
             else:
@@ -800,10 +801,11 @@ class YOLO:
 
                 print("YOLO Saving:")
                 for key in tqdm(data):
-                    manifest_file.write(os.path.abspath(os.path.join(
-                        img_path, "".join([key, img_type, "\n"]))))
-
-                    with open(os.path.abspath(os.path.join(save_path, "".join([key, ".txt"]))), "w") as output_txt_file:
+                    manifest_file.write("".join([key, img_type, "\n"]))
+                    savefilename = os.path.abspath(os.path.join(save_path, "".join([key, ".txt"])))
+                    savedirectory = os.path.dirname(savefilename)
+                    pathlib.Path(savedirectory).mkdir(parents=True, exist_ok=True)
+                    with open(savefilename, "w") as output_txt_file:
                         output_txt_file.write(data[key])
 
 

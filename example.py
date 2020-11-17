@@ -37,7 +37,8 @@ def main(config):
         yolo = YOLO(os.path.abspath(config["cls_list"]))
 
         flag, data = voc.parse(config["label"])
-
+        #print(data)
+        #exit()
         if flag == True:
             # This Class Change and delete is only tested for voc, other classes will also work.
             # This portion of code need to be pasted there.
