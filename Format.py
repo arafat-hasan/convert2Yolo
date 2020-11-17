@@ -240,7 +240,7 @@ class VOC:
 
             #(dir_path, dir_names, filenames) = next(
             #    os.walk(os.path.abspath(path)))
-            
+            print("File globbing started...")
             filenames = glob.glob(path + '/**/*.xml', recursive=True)
 
             data = {}
