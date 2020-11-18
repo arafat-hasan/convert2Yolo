@@ -10,6 +10,8 @@ import argparse
 from tqdm import tqdm
 import glob
 import cv2
+import pathlib
+from io import BytesIO
 
 parser = argparse.ArgumentParser(description='label Converting example.')
 
@@ -43,9 +45,14 @@ def main(config):
     img_dir = config["img_path"]
     img_type = config["img_type"]
 
-    for filename in tqdm(glob.iglob(xml_dir + '**/*.xml', recursive=True)):
+    print("Globbing started")
+    filenames = glob.glob(xml_dir + '/**/*.xml', recursive=True)
+    print("Total files: ", len(filenames))
+
+    for filename in tqdm(filenames):
+        #print(filename)
         basename = os.path.basename(filename)
-        nakedname = os.path.splitext(basename)[0]
+        name_with_path = os.path.relpath(os.path.splitext(filename)[0], xml_dir)
         tree = ET.parse(filename)
         
         root = tree.getroot()
@@ -53,7 +60,7 @@ def main(config):
         size = root.find("size")
         if size.find("width").text == None or size.find("height").text == None or size.find("depth").text == None or size.find("width").text == "0" or size.find("height").text == "0" or size.find("depth").text == "0":
             print(f'\nInvalid image size in `{basename}`, no worry, fixing...')
-            im = cv2.imread(os.path.join(img_dir, nakedname+img_type))
+            im = cv2.imread(os.path.join(img_dir, name_with_path+img_type))
             h, w, d = im.shape
             print(f'Scanned image size: h, w, d = {h}, {w}, {d}')
             size.find("width").text = str(w)
@@ -65,12 +72,17 @@ def main(config):
             if obj.find("name").text == "DELETE":
                 root.remove(obj)
         
-        b_xml = ET.tostring(root, encoding='utf-8', method='xml') 
-        
+        et = ET.ElementTree(root)
 
-        output_xml = os.path.join(store_dir, nakedname+".xml")
-        with open(output_xml, "wb") as f:
-            f.write(b_xml) 
+        savefilename = os.path.abspath(os.path.join(store_dir, "".join([name_with_path, ".xml"])))
+        savedirectory = os.path.dirname(savefilename)
+        pathlib.Path(savedirectory).mkdir(parents=True, exist_ok=True)
+
+        f = BytesIO()
+        et.write(f, encoding='utf-8', xml_declaration=True) 
+
+        with open(savefilename, "wb") as xml_write:
+            xml_write.write(f.getvalue()) 
     
     
 
